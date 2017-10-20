@@ -31,18 +31,22 @@ exports.number = {
     if(s[0] === 'P') return parseInt(s.substring(2))
     if(s[0] === 'N') return -flip(s.substring(2))
   }
-
 }
 
+exports.string = {
+  encode: function (s) {
+    //we'll need to escape the separators
+    return s.replace('\x00', '\x01\x01')
+  },
+  decode: function () {
+    throw new Error('charwise.string.decode: not yet implemented')
+  }
+}
 
-
-
-
-
-
-
-
-
-
-
+exports.encode = function (ary) {
+  var s = ''
+  for(var i = 0; i < ary.length; i++)
+    s += '!'+exports[typeof ary[i]].encode(ary[i])
+  return s
+}
 
