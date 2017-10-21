@@ -35,6 +35,14 @@ charwise.decode 74076
 `charwise` shows it can be much faster. I suspect the problem
 is creating too many buffers.
 
+## TODO
+
+this is currently a crude proof of concept, not fully correct!
+
+* nested arrays
+* 1.01e12 style numbers
+* escape weird values from strings
+
 ## License
 
 MIT
