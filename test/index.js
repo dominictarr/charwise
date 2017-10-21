@@ -5,7 +5,7 @@ var codec = require('../')
 
 tape('numbers', function (t) {
 
-  var expected = [1,2,0,-1, 10, 1000, 949939434, -2, -30]
+  var expected = [1,2,0,-1, 10, 1000, 949939434, -2, -30, 0.5, -0.72, -0.00001, 1000.00102120]
 
   function test (n) {
     var s = codec.number.encode(n)
@@ -55,13 +55,38 @@ var data = [
   undefined
 ].sort(compare)
 
-console.log(data)
-
 tape('order', function (t) {
   var strings = data.map(codec.encode).sort()
   t.deepEqual(
     strings.map(codec.decode),
     data
+  )
+  t.end()
+})
+
+
+tape('array', function (t) {
+  var a = []
+//  for(var i = 0; i<data.length;i++)
+//    for(var j = 0; j < data.length; j++)
+//      a.push([data[i], data[j]])
+
+  for(var i = 0; i < 100; i++) {
+    var l = Math.random()*10
+    var b = []
+    a.push(b)
+    for(var j = 0; j < l; j++)
+      b.push(data[~~(Math.random()*data.length)])
+  }
+
+  a.sort(compare)
+
+  var strings = a.map(codec.encode).sort()
+
+  console.log(strings)
+  t.deepEqual(
+    strings.map(codec.decode),
+    a
   )
   t.end()
 })
