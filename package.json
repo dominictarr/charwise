@@ -10,7 +10,8 @@
   "dependencies": {},
   "devDependencies": {
     "bytewise": "^1.1.0",
-    "tape": "^4.8.0"
+    "tape": "^4.8.0",
+    "typewiselite": "^1.0.0"
   },
   "scripts": {
     "test": "set -e; for t in test/*.js; do node $t; done"
