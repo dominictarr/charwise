@@ -1,4 +1,3 @@
-
 var forward = {}
 var reverse = {}
 var negative = new Array(32)
@@ -18,6 +17,7 @@ var flip = exports.flip = function (n) {
   return f
 }
 
+
 exports.number = {
   encode: function (n) {
     var s = (n>=0?n:n*-1).toString()
@@ -36,17 +36,68 @@ exports.number = {
 exports.string = {
   encode: function (s) {
     //we'll need to escape the separators
-    return s.replace('\x00', '\x01\x01')
+    if(!/\x00|\x01/.test(s))
+      return 'S'+s
+    else {
+      return 'S'+s.replace(/\x01/g, '\x01\x01').replace(/\x00/g, '\x01')
+    }
   },
-  decode: function () {
-    throw new Error('charwise.string.decode: not yet implemented')
+  decode: function (s) {
+    if('S' === s[0])
+      return s.substring(1) //TODO, unescape things...
   }
 }
 
-exports.encode = function (ary) {
-  var s = ''
-  for(var i = 0; i < ary.length; i++)
-    s += '!'+exports[typeof ary[i]].encode(ary[i])
-  return s
+exports.object = {
+  encode: function (a) {
+    if(!a) return 'A'
+    if(!Array.isArray(a)) throw new Error('can only encode arrays')
+    var s = ''
+    for(var i = 0; i < a.length; i++)
+      s += '!'+exports.encode(a[i])
+    return s
+  },
+  decode: function (s) {
+    if(s === 'A') return null
+    return s.split('\x00').map(exports.decode)
+  }
+}
+
+exports.boolean = {
+  encode: function (b) {
+    return b ? 'C' : 'B'
+  },
+  decode: function (b) {
+    return 'C' === b
+  }
+}
+
+exports.undefined = {
+  encode: function (b) {
+    return 'U'
+  },
+  decode: function () {
+    return undefined
+  }
+}
+
+exports.encode = function (t) {
+  return exports[typeof t].encode(t)
+}
+
+var decoders = {
+  A: exports.object.decode, //null
+  B: exports.boolean.decode,
+  C: exports.boolean.decode,
+  P: exports.number.decode,
+  N: exports.number.decode,
+  S: exports.string.decode,
+  O: exports.object.decode,
+  U: exports.undefined.decode,
+
+}
+
+exports.decode = function (s) {
+  return decoders[s[0]](s)
 }
 
