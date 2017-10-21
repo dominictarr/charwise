@@ -1,6 +1,5 @@
-
-
 var tape = require('tape')
+var compare = require('typewiselite')
 
 var codec = require('../')
 
@@ -46,3 +45,23 @@ tape('flip', function (t) {
   t.end()
 })
 
+var data = [
+  1, 0, 8234, 90321, -12, -34,
+//  0.1, -1.0032e29,
+  'hello', 'bye',
+  true,
+  false,
+  null,
+  undefined
+].sort(compare)
+
+console.log(data)
+
+tape('order', function (t) {
+  var strings = data.map(codec.encode).sort()
+  t.deepEqual(
+    strings.map(codec.decode),
+    data
+  )
+  t.end()
+})
