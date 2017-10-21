@@ -12,24 +12,38 @@ var flip = exports.flip = function (n) {
   var s = n.toString()
   var f = ''
   for(var i in s) {
-    f += (9 - +s[i])
+    f += s[i] == '.' ? '.' : (9 - +s[i])
   }
   return f
 }
 
+function round (n) {
+  return n < 0 ? Math.ceil(n) : Math.floor(n)
+}
+
+function fraction (f) {
+  return f - round(f)
+}
 
 exports.number = {
   encode: function (n) {
-    var s = (n>=0?n:n*-1).toString()
+    var whole = round(n)
+    var s = (~~(whole >= 0 ? whole : whole * -1)).toString()
+    var f = fraction(n), fs = ''
+    if(f) {
+      fs = f.toString().substring(f > 0 ? 2 : 3)
+    }
     var l = s.length.toString()
     if(n >= 0)
-      return 'P'+l+s
+      return 'P' + l + s + (f ? '.'+fs : '')
     else
-      return 'N'+flip(l)+flip(s)
+      return 'N' + flip(l) + flip(s) + (fs ? '.' + flip(fs) : '')
   },
   decode: function (s) {
-    if(s[0] === 'P') return parseInt(s.substring(2))
-    if(s[0] === 'N') return -flip(s.substring(2))
+    if(s[0] === 'P') return parseFloat(s.substring(2))
+    if(s[0] === 'N') {
+      return -flip(s.substring(2))
+    }
   }
 }
 
@@ -59,7 +73,7 @@ exports.object = {
   },
   decode: function (s) {
     if(s === 'A') return null
-    return s.split('\x00').map(exports.decode)
+    return s.split('!').slice(1).map(exports.decode)
   }
 }
 
@@ -94,10 +108,20 @@ var decoders = {
   S: exports.string.decode,
   O: exports.object.decode,
   U: exports.undefined.decode,
-
+  '!': exports.object.decode,
 }
 
 exports.decode = function (s) {
+  if(s === '') return s
+
+  if(!decoders[s[0]])
+    throw new Error('no decoder for:'+JSON.stringify(s))
   return decoders[s[0]](s)
 }
+
+//for leveldb, request strings
+exports.buffer = false
+exports.type = 'charwise'
+
+
 
