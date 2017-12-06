@@ -1,3 +1,4 @@
+var number = require('./codec/number.js');
 var forward = {}
 var reverse = {}
 var negative = new Array(32)
@@ -25,27 +26,7 @@ function fraction (f) {
   return f - round(f)
 }
 
-exports.number = {
-  encode: function (n) {
-    var whole = round(n)
-    var s = (~~(whole >= 0 ? whole : whole * -1)).toString()
-    var f = fraction(n), fs = ''
-    if(f) {
-      fs = f.toString().substring(f > 0 ? 2 : 3)
-    }
-    var l = s.length.toString()
-    if(n >= 0)
-      return 'P' + l + s + (f ? '.'+fs : '')
-    else
-      return 'N' + flip(l) + flip(s) + (fs ? '.' + flip(fs) : '')
-  },
-  decode: function (s) {
-    if(s[0] === 'P') return parseFloat(s.substring(2))
-    if(s[0] === 'N') {
-      return -flip(s.substring(2))
-    }
-  }
-}
+exports.number = number;
 
 exports.string = {
   encode: function (s) {
@@ -122,6 +103,3 @@ exports.decode = function (s) {
 //for leveldb, request strings
 exports.buffer = false
 exports.type = 'charwise'
-
-
-
