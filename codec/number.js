@@ -7,28 +7,28 @@
 // Then negative numbers' mantissa and exponent are flipped (nines' complement)
 
 exports.encode = function (number) {
-    if (isNaN(number)) { return "NaN"; }
-    if (number === 0) { return "PE  0M0"; }
-    if (number === Infinity) { return "PF"; }
-    if (number === -Infinity) { return "ND"; }
+    if (isNaN(number)) { return "DaN"; }
+    if (number === 0) { return "FE  0M0"; }
+    if (number === Infinity) { return "FF"; }
+    if (number === -Infinity) { return "DD"; }
 
     var splitScientificNotation = number.toExponential().split('e');
     var exponent = Number(splitScientificNotation[1]) + 500;
     var mantissa = splitScientificNotation[0] + (splitScientificNotation[0].indexOf('.') === -1 ? '.' : '') + '0'.repeat(20);
     var encoded = 'E' + padStart(String(exponent), 3) + 'M' + String(mantissa);
     if (number > 0) {
-        return 'P' + encoded;
+        return 'F' + encoded;
     } else {
-        return 'N' + flip(encoded);
+        return 'D' + flip(encoded);
     }
 }
 
 exports.decode = function (encoded) {
-    if (encoded === 'NaN') { return NaN; }
-    if (encoded === 'PF') { return Infinity; }
-    if (encoded === 'ND') { return -Infinity; }
+    if (encoded === 'DaN') { return NaN; }
+    if (encoded === 'FF') { return Infinity; }
+    if (encoded === 'DD') { return -Infinity; }
 
-    var isNegative = encoded[0] === 'N';
+    var isNegative = encoded[0] === 'D';
     var splitEncoded = (isNegative ? flip(encoded) : encoded).slice(2).split('M');
     return Number((isNegative ? '-':'') + splitEncoded[1] + 'e' + String(Number(splitEncoded[0])-500));
 }

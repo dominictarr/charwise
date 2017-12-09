@@ -1,13 +1,5 @@
 var number = require('./codec/number.js');
-var forward = {}
-var reverse = {}
-var negative = new Array(32)
-
-for(var i = 0; i < 32; i++) {
-  forward[i.toString(32)] = i
-  negative[i] = (32-i).toString(32)
-  reverse[i.toString(32)] = 32-i
-}
+var object = require('./codec/object.js');
 
 var flip = exports.flip = function (n) {
   var s = n.toString()
@@ -32,31 +24,30 @@ exports.string = {
   encode: function (s) {
     //we'll need to escape the separators
     if(!/\x00|\x01/.test(s))
-      return 'S'+s
+      return 'J'+s
     else {
-      return 'S'+s.replace(/\x01/g, '\x01\x01').replace(/\x00/g, '\x01')
+      return 'J'+s.replace(/\x01/g, '\x01\x01').replace(/\x00/g, '\x01')
     }
   },
   decode: function (s) {
-    if('S' === s[0])
+    if('J' === s[0])
       return s.substring(1) //TODO, unescape things...
   }
 }
 
-exports.object = {
-  encode: function (a) {
-    if(!a) return 'A'
-    if(!Array.isArray(a)) throw new Error('can only encode arrays')
-    var s = ''
-    for(var i = 0; i < a.length; i++)
-      s += '!'+exports.encode(a[i])
-    return s
-  },
-  decode: function (s) {
-    if(s === 'A') return null
-    return s.split('!').slice(1).map(exports.decode)
-  }
+exports.encode = function (t) {
+  return exports[typeof t].encode(t)
 }
+
+exports.decode = function (s) {
+  if(s === '') return s
+
+  if(!decoders[s[0]])
+    throw new Error('no decoder for:'+JSON.stringify(s))
+  return decoders[s[0]](s)
+}
+
+exports.object = object.factory(exports);
 
 exports.boolean = {
   encode: function (b) {
@@ -69,36 +60,27 @@ exports.boolean = {
 
 exports.undefined = {
   encode: function (b) {
-    return 'U'
+    return 'L'
   },
   decode: function () {
     return undefined
   }
 }
 
-exports.encode = function (t) {
-  return exports[typeof t].encode(t)
-}
-
 var decoders = {
-  A: exports.object.decode, //null
-  B: exports.boolean.decode,
-  C: exports.boolean.decode,
-  P: exports.number.decode,
-  N: exports.number.decode,
-  S: exports.string.decode,
-  O: exports.object.decode,
-  U: exports.undefined.decode,
-  '!': exports.object.decode,
+    A: exports.object.decode, //null
+    B: exports.boolean.decode, // false
+    C: exports.boolean.decode, // true
+  D: exports.number.decode, // number
+  F: exports.number.decode, // number
+  // G Date
+  // H Date
+  // I Buffer
+  J: exports.string.decode, // String
+  K: exports.object.decode, // Array
+  L: exports.undefined.decode, // undefined
 }
 
-exports.decode = function (s) {
-  if(s === '') return s
-
-  if(!decoders[s[0]])
-    throw new Error('no decoder for:'+JSON.stringify(s))
-  return decoders[s[0]](s)
-}
 
 //for leveldb, request strings
 exports.buffer = false
