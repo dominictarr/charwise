@@ -29,7 +29,7 @@ function cmp (a, b) {
   return a - b
 }
 //
-//function neg (e) { 
+//function neg (e) {
 //  return -e
 //}
 

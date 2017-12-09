@@ -1,10 +1,14 @@
 var tape = require('tape')
-const { encode, decode } = require('../codec/number.js');
+var codec = require('../codec/number.js');
+var encode = codec.encode;
+var decode = codec.decode;
 
-const rand = (min, max) => Math.random() * (max - min) + min
+function rand (min, max) {
+    return Math.random() * (max - min) + min
+}
 
-const randQ1 = () => {
-    const dice = Math.floor(rand(0, 3));
+function randQ1 () {
+    var dice = Math.floor(rand(0, 3));
     if (dice === 0) {
         return (1+Math.random()) * Math.pow(10, rand(0,9))
     }
@@ -16,8 +20,8 @@ const randQ1 = () => {
     }
 }
 
-const randQ2 = () => {
-    const dice = Math.floor(rand(0, 3));
+function randQ2 () {
+    var dice = Math.floor(rand(0, 3));
     if (dice === 0) {
         return Math.random() * Math.pow(10, -rand(0,9))
     }
@@ -29,73 +33,69 @@ const randQ2 = () => {
     }
 }
 
-const randQ3 = () => -randQ2();
-
-const randQ4 = () => -randQ1();
-
-const randQ = () => {
-    const dice = Math.floor(rand(0, 4));
+function randQ () {
+    var dice = Math.floor(rand(0, 4));
     if (dice === 0) { return randQ1(); }
     if (dice === 1) { return randQ2(); }
-    if (dice === 2) { return randQ3(); }
-    if (dice === 3) { return randQ4(); }
+    if (dice === 2) { return -randQ2(); }
+    if (dice === 3) { return -randQ1(); }
 }
-tape("Number: 1", t => {
+tape("Number: 1", function (t) {
     t.equals(decode(encode(1)), 1, 'decode inverses encode');
     t.assert(encode(1) > encode(0.999), 'orders well with number before')
     t.assert(encode(1) < encode(1.001), 'orders well with number after')
     t.end();
 });
 
-tape("Number: -1", t => {
+tape("Number: -1", function (t) {
     t.equals(decode(encode(-1)), -1, 'decode inverses encode');
     t.assert(encode(-1) > encode(-1.001), 'orders well with number before')
     t.assert(encode(-1) < encode(-0.999), 'orders well with number after')
     t.end();
 });
 
-tape("Number: 0", t => {
+tape("Number: 0", function (t) {
     t.equals(decode(encode(0)), 0, 'decode inverses encode');
     t.assert(encode(0) > encode(-Number.MIN_VALUE), 'orders well with number before')
     t.assert(encode(0) < encode(Number.MIN_VALUE), 'orders well with number after')
     t.end();
 });
 
-tape("Number: Infinity", t => {
+tape("Number: Infinity", function (t) {
     t.equals(decode(encode(Infinity)), Infinity, 'decode inverses encode');
     t.assert(encode(Infinity) > encode(Number.MAX_VALUE), 'orders well with number before')
     t.end();
 });
 
-tape("Number: Infinity", t => {
+tape("Number: Infinity", function (t) {
     t.equals(decode(encode(-Infinity)), -Infinity, 'decode inverses encode');
     t.assert(encode(-Infinity) < encode(Number.MAX_VALUE), 'orders well with number after')
     t.end();
 });
 
-tape("Number: random pairs", t => {
-    let i;
+tape("Number: random pairs", function (t) {
+    var i;
     for (i = 0; i < 1000; i++) {
-        const a = randQ();
-        const b = randQ();
+        var a = randQ();
+        var b = randQ();
         if (decode(encode(a)) !== a) {
-            t.equals(decode(encode(a)), a, `decode(encode(${a})) !== ${a}`);
+            t.equals(decode(encode(a)), a, 'decode(encode(' + a + ')) !== ' + a);
             break;
         }
         if (decode(encode(b)) !== b) {
-            t.equals(decode(encode(b)), b, `decode(encode(${b})) !== ${b}`);
+            t.equals(decode(encode(b)), b, 'decode(encode(' + b + ')) !== ' + b);
             break;
         }
         if(a < b && encode(a) >= encode(b)) {
-            t.fail(`encode(${a}) >= encode(${b})`);
+            t.fail('encode(' + a + ') >= encode(' + b + ')');
             break;
         }
         if(a > b && encode(a) <= encode(b)) {
-            t.fail(false, `encode(${a}) <= encode(${b})`);
+            t.fail('encode(' + a + ') =< encode(' + b + ')');
             break;
         }
         if(a === b && encode(a) !== encode(b)) {
-            t.fail(false, `encode(${a}) !== encode(${b})`);
+            t.fail('encode(' + a + ') !== encode(' + b + ')');
             break;
         }
     }
@@ -105,29 +105,29 @@ tape("Number: random pairs", t => {
     t.end();
 });
 
-tape("Number: random pairs of close numbers", t => {
-    let i;
+tape("Number: random pairs of close numbers", function (t) {
+    var i;
     for (i = 0; i < 100; i++) {
-        const a = Math.floor(rand(-10,10));
-        const b = a + (Math.random() > 0.5 ? 1 : -1)*0.000000000000001;
+        var a = Math.floor(rand(-10,10));
+        var b = a + (Math.random() > 0.5 ? 1 : -1)*0.000000000000001;
         if (decode(encode(a)) !== a) {
-            t.equals(decode(encode(a)), a, `decode(encode(${a})) !== ${a}`);
+            t.equals(decode(encode(a)), a, 'decode(encode(' + a + ')) !== ' + a);
             break;
         }
         if (decode(encode(b)) !== b) {
-            t.equals(decode(encode(b)), b, `decode(encode(${a})) !== ${a}`);
+            t.equals(decode(encode(b)), b, 'decode(encode(' + b + ')) !== ' + b);
             break;
         }
         if(a < b && encode(a) >= encode(b)) {
-            t.fail(`encode(${a}) >= encode(${b})`);
+            t.fail('encode(' + a + ') >= encode(' + b + ')');
             break;
         }
         if(a > b && encode(a) <= encode(b)) {
-            t.fail(`encode(${a}) <= encode(${b})`);
+            t.fail('encode(' + a + ') =< encode(' + b + ')');
             break;
         }
         if(a === b && encode(a) !== encode(b)) {
-            t.fail(`encode(${a}) !== encode(${b})`);
+            t.fail('encode(' + a + ') !== encode(' + b + ')');
             break;
         }
     }

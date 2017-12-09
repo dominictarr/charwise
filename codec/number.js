@@ -12,13 +12,13 @@ exports.encode = function (number) {
     if (number === Infinity) { return "PF"; }
     if (number === -Infinity) { return "ND"; }
 
-    let [mantissa, exponent] = number.toExponential().split('e');
-    exponent = Number(exponent) + 500;
-    mantissa += (mantissa.indexOf('.') === -1 ? '.' : '') + '0'.repeat(20);
-    const encoded = `E${String(exponent).padStart(3)}M${String(mantissa)}`;
+    var splitScientificNotation = number.toExponential().split('e');
+    var exponent = Number(splitScientificNotation[1]) + 500;
+    var mantissa = splitScientificNotation[0] + (splitScientificNotation[0].indexOf('.') === -1 ? '.' : '') + '0'.repeat(20);
+    var encoded = 'E' + padStart(String(exponent), 3) + 'M' + String(mantissa);
     if (number > 0) {
         return 'P' + encoded;
-    }else{
+    } else {
         return 'N' + flip(encoded);
     }
 }
@@ -28,14 +28,15 @@ exports.decode = function (encoded) {
     if (encoded === 'PF') { return Infinity; }
     if (encoded === 'ND') { return -Infinity; }
 
-    const isNegative = encoded[0] === 'N';
-    let [exponent,mantissa] = (isNegative ? flip(encoded) : encoded).slice(2).split('M');
-    return Number( `${isNegative ? '-':''}${mantissa}e${Number(exponent)-500}` );
+    var isNegative = encoded[0] === 'N';
+    var splitEncoded = (isNegative ? flip(encoded) : encoded).slice(2).split('M');
+    return Number((isNegative ? '-':'') + splitEncoded[1] + 'e' + String(Number(splitEncoded[0])-500));
 }
 
 function flip(number) {
-    let flipped = '';
-    for (let digit of number) {
+    var flipped = '';
+    for (var i = 0; i < number.length; i++) {
+        var digit = number[i];
         if (isNaN(Number(digit)) || digit === ' ') {
             if (digit !== '-') { flipped += digit; }
         } else {
@@ -44,3 +45,7 @@ function flip(number) {
     }
     return flipped;
 }
+
+function padStart (str, count) {
+  return (' ').repeat(count - str.length).substr(0,count) + str;
+};
