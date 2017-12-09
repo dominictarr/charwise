@@ -1,7 +1,7 @@
 {
   "name": "charwise",
   "description": "encode/decode with same encoded sort order as bytewise",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/dominictarr/charwise",
   "repository": {
     "type": "git",
