@@ -68,9 +68,9 @@ exports.undefined = {
 }
 
 var decoders = {
-    A: exports.object.decode, //null
-    B: exports.boolean.decode, // false
-    C: exports.boolean.decode, // true
+  A: exports.object.decode, //null
+  B: exports.boolean.decode, // false
+  C: exports.boolean.decode, // true
   D: exports.number.decode, // number
   F: exports.number.decode, // number
   // G Date
