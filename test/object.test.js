@@ -50,3 +50,13 @@ tape("Object: 1000 random array", function (t) {
     }
     t.end();
 });
+
+tape('edge cases', function (t) {
+  var examples = [[[[]]], ['hello\\', 'world'], ['hello!', 'world!']]
+  examples.forEach(function (a) {
+    t.deepEqual(decode(encode(a)), a)
+  })
+  t.deepEqual(decode(encode(examples)), examples)
+  t.end()
+})
+
