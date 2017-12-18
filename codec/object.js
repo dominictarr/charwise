@@ -3,9 +3,12 @@ exports.factory = function (codec) {
         encode: function (array) {
             if (array === null) { return 'A'; }
             if (!Array.isArray(array)) { throw new Error('can only encode arrays'); }
-            return 'K' + array.map(function (item) {
-                return escape(codec.encode(item))
-            }).join('!');
+            if(array.length == 0) return 'K'
+            var s = 'K'+escape(codec.encode(array[0]))
+            var l = array.length
+            for(var i = 1; i < l; i++)
+              s += '!' + escape(codec.encode(array[i]))
+            return s
         },
         decode: function (encoded) {
             if (encoded === 'A') { return null; }
@@ -34,3 +37,5 @@ function escape (string) {
 function unescape (string) {
     return string.replace(/\\!/g, '!')
 }
+
+
