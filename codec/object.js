@@ -17,7 +17,7 @@ exports.factory = function (codec) {
             var array = [];
             for (var i = 1; i < encoded.length; i++) {
                 var char = encoded[i];
-                if (char === '!' && encoded[i-1] !== '\\') {
+                if (char === '!') {
                     array.push(codec.decode(unescape(buffer)))
                     buffer = '';
                 } else {
@@ -31,11 +31,33 @@ exports.factory = function (codec) {
 }
 
 function escape (string) {
-    return string.replace(/!/g, '\\!')
+    var l = string.length;
+    var buffer = '';
+    for (var i = 0; i < l; i++) {
+        if (string[i] === '!') {
+            buffer += '??';
+        } else if (string[i] === '?') {
+            buffer += '?@';
+        } else {
+            buffer += string[i];
+        }
+    }
+    return buffer;
 }
 
 function unescape (string) {
-    return string.replace(/\\!/g, '!')
+    var l = string.length;
+    var buffer = '';
+    for (var i = 0; i < l; i++) {
+        if (string[i] === '?' && string[i+1] === '?') {
+            buffer += '!';
+            i++;
+        } else if (string[i] === '?' && string[i+1] === '@') {
+            buffer += '?';
+            i++;
+        } else {
+            buffer += string[i];
+        }
+    }
+    return buffer;
 }
-
-
