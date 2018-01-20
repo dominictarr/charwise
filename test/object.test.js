@@ -34,14 +34,14 @@ tape("Object: 1000 random array", function (t) {
         }
         if (bytewise(array1) < bytewise(array2) && encode(array1) >= encode(array2)) {
             t.fail('encode(' + array1 + ') >= encode(' + array2 + ')');
-            break;
+        break;
         }
         if (bytewise(array1) > bytewise(array2) && encode(array1) <= encode(array2)) {
             t.fail('encode(' + array1 + ') >= encode(' + array2 + ')');
             break;
         }
         if (bytewise(array1) === bytewise(array2) && encode(array1) === encode(array2)) {
-            t.fail('encode(' + array1 + ') >= encode(' + array2 + ')');
+            t.fail('encode(' + array1 + ') !== encode(' + array2 + ')');
             break;
         }
     }
