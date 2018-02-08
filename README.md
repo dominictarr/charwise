@@ -16,6 +16,12 @@ effects on a bulk load on a reasonable sized database with a couple
 of indexes.
 (i.e. 100k [secure-scuttlebutt](https://github.com/ssbc/secure-scuttlebutt) messages with indexes, measured by [bench-ssb](https://github.com/ssbc/bench-ssb))
 
+## stability: experimental
+
+Expect breaking changes to encoded format. We are still making
+breaking changes if necessary to improve performance.
+
+(although, [codec api](https://github.com/level/codec#encoding-format) is fully stable and will not change)
 
 ## simple benchmark
 
@@ -23,31 +29,27 @@ run a simple benchmark for one second, encoding & decoding ops
 in one second.
 
 ```
-# name, ops
-bytewise.encode 24274
-bytewise.decode 86983
-
-charwise.encode 107742
-charwise.decode 74076
+# name, ops, multiplier
+bytewise encode 35661
+charwise encode 131366 x3.6
+bytewise decode 107571
+charwise decode 144557 x1.3
 ```
 
-`bytewise.encode` is too slow. It could probably be much faster.
-`charwise` shows it can be much faster. I suspect the problem
-is creating too many buffers.
+It was easy to make charwise faster than bytewise when
+it was only a partial implementation, but once correct escaping
+and nested arrays where added it got slow.
 
-## TODO
-
-this is currently a crude proof of concept, not fully correct!
-
-* nested arrays
-* 1.01e12 style numbers
-* escape weird values from strings
+But then [@PaulBlanche](https://github.com/PaulBlanche)
+[had the genious idea](https://github.com/dominictarr/charwise/pull/7)
+of encoding items in an array with their depth inside the array.
+This supports deeply nested arrays or shallowly nested arrays
+with only one pass escaping the items. This made encoding much faster
+again!
 
 ## License
 
 MIT
-
-
 
 
 
