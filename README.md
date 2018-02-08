@@ -2,8 +2,13 @@
 
 like bytewise, except as strings.
 
-A [standard codec](https://github.com/level/codec#encoding-format)
-as used by [level](https://github.com/level) and [flumedb](https://github.com/flumedb)
+codec for js values (including arrays) that preserves lexiographic
+sort order when encoded. (the order is compatible with [bytewise](https://github.com/deanlandolt/bytewise) and thus indexeddb and couchdb,
+but the encoded format is different)
+
+The api provided follows [the level codec standard](https://github.com/level/codec#encoding-format)
+so this encoding can easily be used with [level](https://github.com/level)
+and [flumedb](https://github.com/flumedb)
 
 ## motivation
 
@@ -50,6 +55,7 @@ again!
 ## License
 
 MIT
+
 
 
 
