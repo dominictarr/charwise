@@ -14,8 +14,8 @@ exports.encode = function (number) {
 
     var splitScientificNotation = number.toExponential().split('e');
     var exponent = Number(splitScientificNotation[1]) + 500;
-    var mantissa = splitScientificNotation[0] + (splitScientificNotation[0].indexOf('.') === -1 ? '.' : '') + '0'.repeat(20);
-    var encoded = 'E' + padStart(String(exponent), 3) + 'M' + String(mantissa);
+    var mantissa = splitScientificNotation[0] + (splitScientificNotation[0].indexOf('.') === -1 ? '.' : '')//+ '0'.repeat(20);
+    var encoded = 'E' + padStart(String(exponent), 3) + 'M' + String(mantissa) + (number > 0 ? '' : 'a')
     if (number > 0) {
         return 'F' + encoded;
     } else {
@@ -30,7 +30,7 @@ exports.decode = function (encoded) {
 
     var isNegative = encoded[0] === 'D';
     var splitEncoded = (isNegative ? flip(encoded) : encoded).slice(2).split('M');
-    return Number((isNegative ? '-':'') + splitEncoded[1] + 'e' + String(Number(splitEncoded[0])-500));
+    return Number((isNegative ? '-':'') + splitEncoded[1].replace('a','') + 'e' + String(Number(splitEncoded[0])-500));
 }
 
 function flip(number) {
@@ -49,3 +49,5 @@ function flip(number) {
 function padStart (str, count) {
   return (' ').repeat(count - str.length).substr(0,count) + str;
 };
+
+
