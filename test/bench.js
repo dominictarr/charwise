@@ -17,7 +17,7 @@ var randArray = function (opt, depth) {
         if (opt.depth != 0 && Math.random() < Math.max(0, opt.depth-depth)/opt.depth) {
             array.push(randArray(opt, depth + 1));
         } else {
-            var dice = Math.floor(Math.random() * 5)
+            var dice = Math.floor(Math.random() * 6)
             if(dice === 0) {
                 array.push(randString())
             }
@@ -32,6 +32,9 @@ var randArray = function (opt, depth) {
             }
             if(dice === 4) {
                 array.push((Math.random()*2 - 1)*1e10);
+            }
+            if(dice === 5) {
+                array.push(~~(Math.random()*1000))
             }
         }
     }
