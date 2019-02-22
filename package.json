@@ -7,7 +7,9 @@
     "type": "git",
     "url": "git://github.com/dominictarr/charwise.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "json-stable-stringify": "^1.0.1"
+  },
   "devDependencies": {
     "bytewise": "^1.1.0",
     "check-ecmascript-version-compatibility": "^0.1.1",

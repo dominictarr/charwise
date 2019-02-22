@@ -79,6 +79,7 @@ var decoders = {
   J: exports.string.decode, // String
   K: exports.object.decode, // Array
   L: exports.undefined.decode, // undefined
+  M: exports.object.decode, // JSON
 }
 
 

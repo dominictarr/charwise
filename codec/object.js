@@ -1,3 +1,5 @@
+var stringify = require("json-stable-stringify")
+
 var dictEscape = { '?': '?@', '!': '??', '"': '?%' };
 function escape(str) {
     if (!/[!"]/.test(str)) { return str; }
@@ -24,16 +26,20 @@ exports.factory = function (codec) {
 
     function encode(array) {
         if (array === null) { return 'A'; }
-        if (!Array.isArray(array)) { throw new Error('can only encode arrays'); }
-        var l = array.length;
-        if (l == 0) { return 'K!'; }
+        if (Array.isArray(array)) {
+            var l = array.length;
+            if (l == 0) { return 'K!'; }
 
-        var s = encodeItem(array[0]);
-        for (var i = 1; i < l; i++) {
-            s += '"' + encodeItem(array[i]);
+            var s = encodeItem(array[0]);
+            for (var i = 1; i < l; i++) {
+                s += '"' + encodeItem(array[i]);
+            }
+
+            return 'K'+ s + '!';
+        } else {
+            var s = escape(stringify(array))
+            return 'M'+ s + '!';
         }
-
-        return 'K'+ s + '!';
     }
 
     function encodeItem(item) {
@@ -46,6 +52,7 @@ exports.factory = function (codec) {
     function decode(encoded) {
         if (encoded === 'A') { return null; }
         if (encoded === 'K!') { return []; }
+        if (encoded[0] === "M") { return JSON.parse(unescape(encoded.slice(1, encoded.length - 1)))}
         var items = encoded.split('"');
 
         var pointers = [[]];
