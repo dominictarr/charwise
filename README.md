@@ -65,10 +65,9 @@ const db = level('./db8', {
 await db.put(['users', 2], 'example')
 await db.put(['users', 10], 'example2')
 
-const LO = null, HI = undefined
 const userStream = db.createStream({
-  gte: ['users', LO],
-  lte: ['users', HI]
+  gte: ['users', charwise.LO],
+  lte: ['users', charwise.HI]
 })
 
 // This will print ['users', 2], ['users', 10]
