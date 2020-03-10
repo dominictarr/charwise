@@ -81,6 +81,9 @@ var decoders = {
   L: exports.undefined.decode, // undefined
 }
 
+exports.LO = null
+exports.HI = undefined
+
 
 //for leveldb, request strings
 exports.buffer = false
