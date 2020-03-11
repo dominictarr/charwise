@@ -62,8 +62,10 @@ const db = level('./db8', {
   keyEncoding: charwise
 })
 
-await db.put(['users', 2], 'example')
-await db.put(['users', 10], 'example2')
+await db.batch([
+  { type: 'put', key: ['users', 2], value: 'example' },
+  { type: 'put', key: ['users', 10], value: 'example2' }
+])
 
 const userStream = db.createStream({
   gte: ['users', charwise.LO],
