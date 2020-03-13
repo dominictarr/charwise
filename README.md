@@ -52,6 +52,33 @@ This supports deeply nested arrays or shallowly nested arrays
 with only one pass escaping the items. This made encoding much faster
 again!
 
+## Examples
+
+```js
+const level = require('level')
+const charwise = require('charwise')
+
+const db = level('./db8', {
+  keyEncoding: charwise
+})
+
+await db.batch([
+  { type: 'put', key: ['users', 2], value: 'example' },
+  { type: 'put', key: ['users', 10], value: 'example2' }
+])
+
+const userStream = db.createStream({
+  gte: ['users', charwise.LO],
+  lte: ['users', charwise.HI]
+})
+
+// This will print ['users', 2], ['users', 10]
+// If you dont use charwise its sorted numerically and would
+// print ['users', 10] , ['users', 2]
+userStream.on('data', console.log)
+```
+
+
 ## License
 
 MIT
