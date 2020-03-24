@@ -1,3 +1,5 @@
+var Buffer = require('buffer').Buffer
+
 var dictEscape = { '?': '?@', '!': '??', '"': '?%' };
 function escape(str) {
     if (!/[!"]/.test(str)) { return str; }
@@ -37,7 +39,7 @@ exports.factory = function (codec) {
     }
 
     function encodeItem(item) {
-        if (typeof item === 'object') {
+        if (typeof item === 'object' && !Buffer.isBuffer(item)) {
             return encode(item);
         }
         return escape(codec.encode(item));
