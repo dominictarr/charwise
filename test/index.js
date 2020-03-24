@@ -49,6 +49,7 @@ var data = [
   1, 0, 8234, 90321, -12, -34,
 //  0.1, -1.0032e29,
   'hello', 'bye',
+  Buffer.from('hello'), Buffer.from('bye'),
   true,
   false,
   null,
@@ -88,5 +89,39 @@ tape('array', function (t) {
     strings.map(codec.decode),
     a
   )
+  t.end()
+})
+
+tape('binary', function (t) {
+  var cities = ['0', 'us-east-1', 'cities']
+  var towns = ['0', 'us-east-2', 'towns']
+  var villages = ['0', 'us-west-1', 'villages']
+
+  var samples = [
+    cities.concat(['New York', 'New York']),
+    cities.concat(['California', 'San Jose']),
+    cities.concat(['California', 'San Francisco']),
+    towns.concat(['New York', Buffer.from('WestBury')]),
+    towns.concat(['California', Buffer.from('Los Gatos')]),
+    towns.concat(['California', Buffer.from('Apple Valley')]),
+    villages.concat([Buffer.from('New York'), 'Greenwich Village']),
+    villages.concat([Buffer.from('California'), 'Tiburon']),
+    villages.concat([Buffer.from('California'), 'Half Moon Bay'])
+  ]
+
+  for (var i = 0; i < samples.length; i++) {
+    var str = codec.encode(samples[i])
+    t.deepEqual(codec.decode(str), samples[i])
+  }
+
+  var strings = samples.map(codec.encode)
+  strings.sort(compare)
+  console.log(strings)
+
+  var decodes = strings.map(codec.decode)
+  t.deepEqual(decodes.slice(0, 3), samples.slice(0, 3).reverse())
+  t.deepEqual(decodes.slice(3, 6), samples.slice(3, 6).reverse())
+  t.deepEqual(decodes.slice(6, 9), samples.slice(6, 9).reverse())
+
   t.end()
 })
